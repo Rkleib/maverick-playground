@@ -1,4 +1,4 @@
-package com.rkleib.maverickplayground.ui
+package com.rkleib.maverickplayground
 
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -17,11 +17,15 @@ import kotlin.reflect.KProperty
  * private val binding: FHomeWorkoutDetailsBinding by viewBinding()
  * with your binding class and access it as you normally would.
  */
-inline fun <reified T : ViewBinding> Fragment.viewBinding() = FragmentViewBindingDelegate(T::class.java, this)
+inline fun <reified T : ViewBinding> Fragment.viewBinding() =
+    FragmentViewBindingDelegate(
+        T::class.java,
+        this
+    )
 
 class FragmentViewBindingDelegate<T : ViewBinding>(
     private val bindingClass: Class<T>,
-    val fragment: Fragment
+    private val fragment: Fragment
 ) : ReadOnlyProperty<Fragment, T> {
     private var binding: T? = null
 
