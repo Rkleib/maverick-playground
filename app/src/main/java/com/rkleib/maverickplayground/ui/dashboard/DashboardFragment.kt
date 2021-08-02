@@ -4,28 +4,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.rkleib.maverickplayground.R
+import androidx.lifecycle.MutableLiveData
+import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.activityViewModel
+import com.airbnb.mvrx.fragmentViewModel
+import com.airbnb.mvrx.withState
+import com.rkleib.maverickplayground.BaseFragment
+import com.rkleib.maverickplayground.databinding.FragmentDashboardBinding
+import retrofit2.Response
 
-class DashboardFragment : Fragment() {
+data class DashboardState(val count: Int = 0) : MavericksState
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+class DashboardFragment : BaseFragment() {
+    private var _binding: FragmentDashboardBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: DashboardViewModel by fragmentViewModel()
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        dashboardViewModel =
-                ViewModelProvider(this).get(DashboardViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
-        return root
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.btnCount.setOnClickListener {
+            viewModel.count()
+        }
+    }
+
+    override fun invalidate() = withState(viewModel) { state ->
+        binding.textDashboard.text = state.count.toString()
+    }
+
+
 }
